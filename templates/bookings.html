@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Bookings - D Joint</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .badge-pending { background-color: #ffc107; }
+        .badge-confirmed { background-color: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">D Joint Lounge</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2 class="mb-4">My Bookings</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if bookings %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>#{{ booking.id }}</td>
+                            <td>
+                                {% if booking.type == 'seat' %}
+                                    <span class="badge bg-info">Seat</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Room</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.type == 'seat' %}
+                                    Seat #{{ booking.seat_id }} at {{ booking.time }}
+                                {% else %}
+                                    Room #{{ booking.room_id }} for {{ booking.hours }} hours
+                                {% endif %}
+                            </td>
+                            <td>{{ booking.date }}</td>
+                            <td>
+                                {% if booking.status == 'pending' %}
+                                    <span class="badge badge-pending">Pending</span>
+                                {% else %}
+                                    <span class="badge badge-confirmed">Confirmed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                You haven't made any bookings yet. 
+                <a href="/book-seat" class="alert-link">Book a seat</a> or 
+                <a href="/book-room" class="alert-link">book a room</a>!
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

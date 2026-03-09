@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - D Joint Lounge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: white;
+            font-size: 2.5rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .order-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .order-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .order-details {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .detail-value {
+            color: var(--dark);
+        }
+        
+        .items-list {
+            margin: 20px 0;
+        }
+        
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #666;
+        }
+        
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-outline {
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .print-btn {
+            background: none;
+            border: 2px solid #dee2e6;
+            color: #666;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .print-btn:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h2 class="text-center mb-2">Order Confirmed!</h2>
+            <p class="text-center text-muted mb-4">Thank you for ordering from D Joint Lounge</p>
+            
+            <div class="order-number text-center">
+                #{{ order.id }}
+            </div>
+            <div class="order-label text-center mb-4">Order Number</div>
+            
+            <div class="order-details">
+                <h5 class="mb-3">Order Details</h5>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Customer Name:</span>
+                    <span class="detail-value">{{ order.customer_name }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number:</span>
+                    <span class="detail-value">{{ order.customer_phone }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Order Type:</span>
+                    <span class="detail-value">
+                        {% if order.order_type == 'dine_in' %}
+                            Dine In {% if order.table_number %} - Table {{ order.table_number }}{% endif %}
+                        {% else %}
+                            Takeaway
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span class="detail-value">{{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="badge bg-warning">{{ order.status|upper }}</span>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Items Ordered</h5>
+                
+                <div class="items-list">
+                    {% for item in order.items %}
+                    <div class="item-row">
+                        <span>{{ item.quantity }}x {{ item.food_item.name }}</span>
+                        <span>₦{{ "{:,.0f}".format(item.price * item.quantity) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="total-amount">
+                    Total: ₦{{ "{:,.0f}".format(order.total_amount) }}
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/" class="btn-primary btn text-center text-decoration-none">Back to Home</a>
+                <a href="/menu" class="btn-outline">Order More</a>
+            </div>
+            
+            <button class="print-btn" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Receipt
+            </button>
+            
+            <p class="text-center text-muted small mt-3">
+                A confirmation SMS has been sent to {{ order.customer_phone }}
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Clear cart from localStorage after successful order
+        localStorage.removeItem('orderCart');
+    </script>
+</body>
+</html>

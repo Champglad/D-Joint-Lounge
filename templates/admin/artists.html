@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Artists - D Joint Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            position: fixed;
+            width: 250px;
+            color: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-header p {
+            margin: 5px 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: white;
+        }
+        
+        .sidebar-menu i {
+            width: 25px;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        /* Admin Info Bar */
+        .admin-info-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .admin-details h5 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .admin-details p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            color: white;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 2rem;
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+        
+        .stat-info h3 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--dark);
+        }
+        
+        .stat-info p {
+            margin: 5px 0 0;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: #666;
+            border-radius: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tab-btn:hover {
+            background: var(--light);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Artists Grid */
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .artist-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+        }
+        
+        .artist-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .artist-header h4 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .artist-header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .artist-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .artist-body {
+            padding: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--light);
+        }
+        
+        .info-label {
+            width: 100px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .bio-preview {
+            background: var(--light);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            color: #555;
+            max-height: 80px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bio-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to top, var(--light), transparent);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .social-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .artist-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-approve, .btn-feature, .btn-reject, .btn-schedule {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-width: 100px;
+        }
+        
+        .btn-approve {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-feature {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-feature:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-schedule {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-schedule:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 30px;
+            border: none;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .schedule-form {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+        }
+        
+        /* Alert */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .admin-info-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .admin-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .artist-actions {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cocktail fa-2x mb-2"></i>
+            <h3>D Joint Admin</h3>
+            <p>Management Dashboard</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="/admin">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="/admin/orders">
+                <i class="fas fa-shopping-cart"></i> Food Orders
+            </a>
+            <a href="/admin/artist-applications" class="active">
+                <i class="fas fa-microphone"></i> Artists
+            </a>
+            <a href="/admin/snooker-bookings">
+                <i class="fas fa-table-tennis"></i> Snooker
+            </a>
+            <a href="/">
+                <i class="fas fa-arrow-left"></i> Back to Site
+            </a>
+        </div>
+        
+        <div class="sidebar-footer position-absolute bottom-0 start-0 w-100 p-3">
+            <div class="text-center text-white-50 small">
+                <i class="fas fa-lock me-1"></i>Secure Area
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Admin Info Bar -->
+        <div class="admin-info-bar">
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="admin-details">
+                    <h5>Welcome, {{ session.admin_email }}</h5>
+                    <p>
+                        <i class="fas fa-clock me-1"></i>Logged in: {{ session.admin_login_time }}
+                        <span class="badge bg-success ms-2">Active Session</span>
+                    </p>
+                </div>
+            </div>
+            <a href="/admin-logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+
+        <div class="page-header">
+            <h2>
+                <i class="fas fa-microphone me-3" style="color: var(--primary);"></i>
+                Artist Management
+            </h2>
+            <div>
+                <span class="badge bg-primary p-2">
+                    <i class="fas fa-calendar me-1"></i>{{ now().strftime('%B %d, %Y') }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ pending|length }}</h3>
+                    <p>Pending Applications</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ approved|length }}</h3>
+                    <p>Approved Artists</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ featured|length }}</h3>
+                    <p>Featured Artists</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('pending')">
+                <i class="fas fa-clock me-2"></i>Pending ({{ pending|length }})
+            </button>
+            <button class="tab-btn" onclick="showTab('approved')">
+                <i class="fas fa-check-circle me-2"></i>Approved ({{ approved|length }})
+            </button>
+            <button class="tab-btn" onclick="showTab('featured')">
+                <i class="fas fa-star me-2"></i>Featured ({{ featured|length }})
+            </button>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Pending Artists Tab -->
+        <div id="pending-tab" class="tab-pane active">
+            {% if pending %}
+            <div class="artists-grid">
+                {% for artist in pending %}
+                <div class="artist-card">
+                    <div class="artist-header">
+                        <h4>{{ artist.stage_name }}</h4>
+                        <p>{{ artist.genre }}</p>
+                        <span class="artist-badge">
+                            <i class="fas fa-clock me-1"></i>Pending
+                        </span>
+                    </div>
+                    <div class="artist-body">
+                        <div class="info-row">
+                            <span class="info-label">Real Name:</span>
+                            <span class="info-value">{{ artist.real_name or 'Not provided' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">{{ artist.phone }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">{{ artist.email or 'Not provided' }}</span>
+                        </div>
+                        
+                        <div class="bio-preview">
+                            <strong>Bio:</strong><br>
+                            {{ artist.bio }}
+                        </div>
+                        
+                        <div class="social-links">
+                            {% if artist.social_media and artist.social_media.instagram %}
+                            <a href="https://instagram.com/{{ artist.social_media.instagram }}" class="social-icon" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.social_media and artist.social_media.twitter %}
+                            <a href="https://twitter.com/{{ artist.social_media.twitter }}" class="social-icon" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.social_media and artist.social_media.tiktok %}
+                            <a href="https://tiktok.com/@{{ artist.social_media.tiktok }}" class="social-icon" target="_blank">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.music_links and artist.music_links.soundcloud %}
+                            <a href="{{ artist.music_links.soundcloud }}" class="social-icon" target="_blank">
+                                <i class="fab fa-soundcloud"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.music_links and artist.music_links.youtube %}
+                            <a href="{{ artist.music_links.youtube }}" class="social-icon" target="_blank">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="artist-actions">
+                            <a href="/admin/approve-artist/{{ artist.id }}" class="btn-approve" onclick="return confirm('Approve {{ artist.stage_name }}?')">
+                                <i class="fas fa-check me-1"></i>Approve
+                            </a>
+                            <a href="/admin/reject-artist/{{ artist.id }}" class="btn-reject" onclick="return confirm('Reject {{ artist.stage_name }}? This action cannot be undone.')">
+                                <i class="fas fa-times me-1"></i>Reject
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h4>No Pending Applications</h4>
+                <p class="text-muted">New artist applications will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Approved Artists Tab -->
+        <div id="approved-tab" class="tab-pane">
+            {% if approved %}
+            <div class="artists-grid">
+                {% for artist in approved %}
+                <div class="artist-card">
+                    <div class="artist-header" style="background: linear-gradient(135deg, var(--success), #059669);">
+                        <h4>{{ artist.stage_name }}</h4>
+                        <p>{{ artist.genre }}</p>
+                        <span class="artist-badge">
+                            <i class="fas fa-check me-1"></i>Approved
+                        </span>
+                    </div>
+                    <div class="artist-body">
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">{{ artist.phone }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">{{ artist.email or 'Not provided' }}</span>
+                        </div>
+                        
+                        <div class="bio-preview">
+                            <strong>Bio:</strong><br>
+                            {{ artist.bio }}
+                        </div>
+                        
+                        <div class="social-links">
+                            {% if artist.social_media and artist.social_media.instagram %}
+                            <a href="https://instagram.com/{{ artist.social_media.instagram }}" class="social-icon" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.social_media and artist.social_media.twitter %}
+                            <a href="https://twitter.com/{{ artist.social_media.twitter }}" class="social-icon" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="artist-actions">
+                            <a href="/admin/feature-artist/{{ artist.id }}" class="btn-feature">
+                                <i class="fas fa-star me-1"></i>Feature
+                            </a>
+                            <button class="btn-schedule" onclick="schedulePerformance({{ artist.id }}, '{{ artist.stage_name }}')" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                <i class="fas fa-calendar me-1"></i>Schedule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h4>No Approved Artists</h4>
+                <p class="text-muted">Approve pending applications to see them here</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Featured Artists Tab -->
+        <div id="featured-tab" class="tab-pane">
+            {% if featured %}
+            <div class="artists-grid">
+                {% for artist in featured %}
+                <div class="artist-card">
+                    <div class="artist-header" style="background: linear-gradient(135deg, var(--warning), #f59e0b);">
+                        <h4>{{ artist.stage_name }} ⭐</h4>
+                        <p>{{ artist.genre }}</p>
+                        <span class="artist-badge">
+                            <i class="fas fa-star me-1"></i>Featured
+                        </span>
+                    </div>
+                    <div class="artist-body">
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">{{ artist.phone }}</span>
+                        </div>
+                        
+                        <div class="bio-preview">
+                            <strong>Bio:</strong><br>
+                            {{ artist.bio }}
+                        </div>
+                        
+                        <div class="social-links">
+                            {% if artist.social_media and artist.social_media.instagram %}
+                            <a href="https://instagram.com/{{ artist.social_media.instagram }}" class="social-icon" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info mt-3 mb-0 p-2 small">
+                            <i class="fas fa-star me-1"></i>This artist is featured on the homepage
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>No Featured Artists</h4>
+                <p class="text-muted">Feature approved artists to showcase them</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Schedule Performance Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-plus me-2"></i>Schedule Performance
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/admin/schedule-performance">
+                        <input type="hidden" name="artist_id" id="scheduleArtistId">
+                        
+                        <div class="schedule-form">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-user me-2"></i>Artist
+                                </label>
+                                <input type="text" class="form-control" id="scheduleArtistName" readonly disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar me-2"></i>Performance Date
+                                </label>
+                                <input type="date" name="date" class="form-control" required min="{{ now().strftime('%Y-%m-%d') }}">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-clock me-2"></i>Start Time
+                                    </label>
+                                    <input type="time" name="start_time" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-clock me-2"></i>End Time
+                                    </label>
+                                    <input type="time" name="end_time" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-3">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule Performance
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-pane').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Update active button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function schedulePerformance(artistId, artistName) {
+            document.getElementById('scheduleArtistId').value = artistId;
+            document.getElementById('scheduleArtistName').value = artistName;
+        }
+        
+        // Auto-refresh every 60 seconds (optional)
+        setTimeout(function() {
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html>

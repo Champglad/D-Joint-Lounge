@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Sign Up - D Joint Lounge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #fbbf24;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        
+        .signup-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .signup-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .signup-header::before {
+            content: '♪';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 150px;
+            opacity: 0.1;
+            transform: rotate(20deg);
+        }
+        
+        .signup-header::after {
+            content: '♫';
+            position: absolute;
+            bottom: -40px;
+            left: -20px;
+            font-size: 200px;
+            opacity: 0.1;
+            transform: rotate(-10deg);
+        }
+        
+        .signup-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .signup-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .signup-form {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px dashed var(--light);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .section-title h3 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-label i {
+            color: var(--primary);
+            width: 20px;
+        }
+        
+        .form-control, .form-select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .social-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .social-prefix {
+            background: var(--light);
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .social-input .form-control {
+            flex: 1;
+        }
+        
+        .music-link-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .music-link-input select {
+            width: 120px;
+            padding: 12px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .terms {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .terms a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .signup-container {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-container">
+            <div class="signup-header">
+                <h1>Artist Application</h1>
+                <p>Join D Joint Lounge's talent community and showcase your art to Lagos</p>
+            </div>
+            
+            <div class="signup-form">
+                <form method="POST" id="artistForm">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>Basic Information</h3>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-star"></i> Stage Name *
+                                </label>
+                                <input type="text" name="stage_name" class="form-control" required placeholder="e.g., DJ Spinall">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card"></i> Real Name (Optional)
+                                </label>
+                                <input type="text" name="real_name" class="form-control" placeholder="Your full name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope"></i> Email (Optional)
+                                </label>
+                                <input type="email" name="email" class="form-control" placeholder="you@example.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number *
+                                </label>
+                                <input type="tel" name="phone" class="form-control" required placeholder="e.g., 08012345678">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-music"></i> Genre *
+                            </label>
+                            <select name="genre" class="form-select" required>
+                                <option value="">Select your genre</option>
+                                <option value="Afrobeats">Afrobeats</option>
+                                <option value="Hip Hop">Hip Hop</option>
+                                <option value="R&B">R&B</option>
+                                <option value="Gospel">Gospel</option>
+                                <option value="Jazz">Jazz</option>
+                                <option value="Reggae/Dancehall">Reggae/Dancehall</option>
+                                <option value="EDM">EDM</option>
+                                <option value="DJ">DJ</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-align-left"></i> Bio/Description *
+                            </label>
+                            <textarea name="bio" class="form-control" required placeholder="Tell us about yourself, your experience, and your music..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media Links -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <h3>Social Media</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </label>
+                            <div class="social-input">
+                                <span class="social-prefix">@</span>
+                                <input type="text" name="instagram" class="form-control" placeholder="username">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-twitter"></i> Twitter/X
+                            </label>
+                            <div class="social-input">
+                                <span class="social-prefix">@</span>
+                                <input type="text" name="twitter" class="form-control" placeholder="username">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-tiktok"></i> TikTok
+                            </label>
+                            <div class="social-input">
+                                <span class="social-prefix">@</span>
+                                <input type="text" name="tiktok" class="form-control" placeholder="username">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Music Links -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-headphones"></i>
+                            </div>
+                            <h3>Your Music</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-soundcloud"></i> SoundCloud Link
+                            </label>
+                            <input type="url" name="soundcloud" class="form-control" placeholder="https://soundcloud.com/your-profile">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fab fa-youtube"></i> YouTube Link
+                            </label>
+                            <input type="url" name="youtube" class="form-control" placeholder="https://youtube.com/@your-channel">
+                        </div>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <h3>Availability</h3>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="monday"> Monday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="tuesday"> Tuesday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="wednesday"> Wednesday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="thursday"> Thursday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="friday"> Friday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="saturday"> Saturday
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="available_weekdays" value="sunday"> Sunday
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Preferred Time</label>
+                            <select name="preferred_time" class="form-select">
+                                <option value="anytime">Anytime</option>
+                                <option value="afternoon">Afternoon (12pm - 6pm)</option>
+                                <option value="evening">Evening (6pm - 12am)</option>
+                                <option value="late">Late Night (12am onwards)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Application
+                    </button>
+                    
+                    <div class="terms">
+                        By applying, you agree to our <a href="#">Terms & Conditions</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <a href="/artists" class="back-link">
+            <i class="fas fa-arrow-left me-2"></i>Back to Artists
+        </a>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation
+        document.getElementById('artistForm').onsubmit = function(e) {
+            const stageName = document.querySelector('input[name="stage_name"]').value;
+            const phone = document.querySelector('input[name="phone"]').value;
+            const genre = document.querySelector('select[name="genre"]').value;
+            const bio = document.querySelector('textarea[name="bio"]').value;
+            
+            if (!stageName || !phone || !genre || !bio) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+            }
+        };
+        
+        // Auto-format phone number
+        document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

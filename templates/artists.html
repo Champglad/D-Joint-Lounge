@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJs & Artists - D Joint Lounge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #fbbf24;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Hero Section */
+        .artists-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 120px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .artists-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,170.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: bottom;
+            opacity: 0.3;
+        }
+        
+        .artists-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .artists-hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .hero-buttons {
+            position: relative;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        /* Featured Artists */
+        .featured-section {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .artist-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+        
+        .artist-image {
+            height: 250px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .artist-image i {
+            font-size: 5rem;
+            color: rgba(255,255,255,0.3);
+        }
+        
+        .artist-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(to top, white, transparent);
+        }
+        
+        .artist-content {
+            padding: 25px;
+            position: relative;
+        }
+        
+        .artist-content h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .artist-genre {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .artist-bio {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .artist-social {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .music-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .music-link {
+            flex: 1;
+            background: var(--light);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .music-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Upcoming Artists */
+        .upcoming-section {
+            padding: 60px 0;
+            background: var(--light);
+        }
+        
+        .upcoming-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .upcoming-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+        
+        .upcoming-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .upcoming-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .upcoming-info h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .upcoming-info p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .upcoming-info i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        /* Performance Schedule */
+        .schedule-section {
+            padding: 60px 0;
+            background: white;
+        }
+        
+        .schedule-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--light);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .schedule-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+        }
+        
+        .schedule-date {
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .schedule-date .day {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+        
+        .schedule-date .month {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .schedule-info {
+            flex: 1;
+        }
+        
+        .schedule-info h4 {
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .schedule-info p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        
+        .schedule-info i {
+            color: var(--primary);
+            width: 20px;
+        }
+        
+        .schedule-tag {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .cta-section .btn {
+            background: white;
+            color: var(--primary);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-widget h5 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .footer-widget h5::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-widget ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-widget ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-widget ul li a {
+            color: #999;
+            text-decoration: none;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 10px;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #999;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .artists-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .artists-hero p {
+                font-size: 1.1rem;
+            }
+            
+            .schedule-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .schedule-tag {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cocktail me-2"></i>D Joint Lounge
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/snooker">Snooker</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/artists">Artists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/book-seat">Book Seat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="artists-hero">
+        <div class="container">
+            <h1>Discover Amazing Talent</h1>
+            <p>From rising stars to established DJs, experience the best of Lagos nightlife at D Joint Lounge</p>
+            <div class="hero-buttons">
+                <a href="/artist-signup" class="btn-signup">
+                    <i class="fas fa-microphone-alt me-2"></i>Are You an Artist? Sign Up
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flash Messages -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Featured Artists -->
+    {% if featured %}
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Artists</h2>
+                <p>The stars lighting up our stage</p>
+            </div>
+            
+            <div class="artists-grid">
+                {% for artist in featured %}
+                <div class="artist-card">
+                    <span class="featured-badge">⭐ FEATURED</span>
+                    <div class="artist-image">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="artist-content">
+                        <h3>{{ artist.stage_name }}</h3>
+                        <div class="artist-genre">{{ artist.genre }}</div>
+                        <p class="artist-bio">{{ artist.bio[:100] }}{% if artist.bio|length > 100 %}...{% endif %}</p>
+                        
+                        <div class="artist-social">
+                            {% if artist.social_media.instagram %}
+                            <a href="{{ artist.social_media.instagram }}" class="social-icon" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.social_media.twitter %}
+                            <a href="{{ artist.social_media.twitter }}" class="social-icon" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            {% endif %}
+                            {% if artist.social_media.tiktok %}
+                            <a href="{{ artist.social_media.tiktok }}" class="social-icon" target="_blank">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="music-links">
+                            {% if artist.music_links.soundcloud %}
+                            <a href="{{ artist.music_links.soundcloud }}" class="music-link" target="_blank">
+                                <i class="fab fa-soundcloud"></i> SoundCloud
+                            </a>
+                            {% endif %}
+                            {% if artist.music_links.youtube %}
+                            <a href="{{ artist.music_links.youtube }}" class="music-link" target="_blank">
+                                <i class="fab fa-youtube"></i> YouTube
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Upcoming Artists -->
+    {% if upcoming %}
+    <section class="upcoming-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Upcoming Artists</h2>
+                <p>Fresh talent ready to take the stage</p>
+            </div>
+            
+            <div class="upcoming-grid">
+                {% for artist in upcoming %}
+                <div class="upcoming-card">
+                    <div class="upcoming-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="upcoming-info">
+                        <h4>{{ artist.stage_name }}</h4>
+                        <p><i class="fas fa-tag"></i> {{ artist.genre }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Performance Schedule -->
+    {% if performances %}
+    <section class="schedule-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Upcoming Performances</h2>
+                <p>Mark your calendar for these amazing shows</p>
+            </div>
+            
+            <div class="schedule-list">
+                {% for performance in performances %}
+                <div class="schedule-item">
+                    <div class="schedule-date">
+                        <div class="day">{{ performance.performance_date.split('-')[2] }}</div>
+                        <div class="month">{{ performance.performance_date.split('-')[1] }}</div>
+                    </div>
+                    <div class="schedule-info">
+                        <h4>{{ performance.artist.stage_name }}</h4>
+                        <p>
+                            <i class="fas fa-clock"></i> {{ performance.start_time }} - {{ performance.end_time }}<br>
+                            <i class="fas fa-tag"></i> {{ performance.artist.genre }}
+                        </p>
+                    </div>
+                    <div class="schedule-tag">
+                        Live Performance
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Showcase Your Talent?</h2>
+            <p>Join our community of artists and perform at D Joint Lounge. We're always looking for fresh talent!</p>
+            <a href="/artist-signup" class="btn btn-lg">
+                <i class="fas fa-mic me-2"></i>Apply Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>About D Joint</h5>
+                        <p>Your premier entertainment destination in Lagos. Great food, exciting games, and unforgettable moments.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/menu">Menu</a></li>
+                            <li><a href="/snooker">Snooker</a></li>
+                            <li><a href="/artists">Artists</a></li>
+                            <li><a href="/book-seat">Book Seat</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>Contact Info</h5>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt me-2"></i>123 Main Street, Lagos</li>
+                            <li><i class="fas fa-phone me-2"></i>+234 800 000 0000</li>
+                            <li><i class="fas fa-envelope me-2"></i>info@djoint.com</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 D Joint Lounge. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

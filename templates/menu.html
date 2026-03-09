@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Menu - D Joint Lounge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #fbbf24;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        /* Hero Section */
+        .menu-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 100px 0 80px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .menu-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .menu-hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            padding: 0 15px;
+        }
+        
+        .category-btn {
+            padding: 12px 25px;
+            border: none;
+            background: white;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        /* Popular Items Section */
+        .popular-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .section-title p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 0 15px;
+        }
+        
+        .popular-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .popular-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent);
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .popular-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .popular-content {
+            padding: 20px;
+        }
+        
+        .popular-content h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .popular-content p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .popular-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .popular-price small {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: normal;
+        }
+        
+        /* Menu Grid */
+        .menu-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 15px;
+        }
+        
+        .menu-grid.active {
+            display: grid;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.1);
+        }
+        
+        .menu-image {
+            height: 150px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+        
+        .menu-details {
+            padding: 20px;
+        }
+        
+        .menu-details h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .menu-details p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .menu-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .menu-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .add-to-cart {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .order-summary.show {
+            display: block;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .order-header h5 {
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .close-order {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .order-item-info h6 {
+            font-weight: 600;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .order-item-info small {
+            color: #666;
+        }
+        
+        .order-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            background: var(--light);
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .item-quantity {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding-top: 10px;
+            border-top: 2px solid var(--light);
+        }
+        
+        .checkout-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cart-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .cart-float:hover {
+            transform: scale(1.1);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: var(--dark);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+            margin-top: 80px;
+        }
+        
+        .footer-widget h5 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .footer-widget h5::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-widget ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-widget ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-widget ul li a {
+            color: #999;
+            text-decoration: none;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 10px;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cocktail me-2"></i>D Joint Lounge
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/snooker">Snooker</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/artists">Artists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/book-seat">Book Seat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="menu-hero">
+        <div class="container">
+            <h1>Our Menu</h1>
+            <p>Delicious meals, refreshing drinks, and perfect cocktails for your enjoyment</p>
+        </div>
+    </section>
+
+    <!-- Flash Messages -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="container">
+        <!-- Popular Items Section -->
+        {% if popular_items %}
+        <div class="popular-section">
+            <div class="section-title">
+                <h2>Most Popular</h2>
+                <p>Customer favorites you'll love</p>
+            </div>
+            <div class="popular-grid">
+                {% for item in popular_items %}
+                <div class="popular-card">
+                    <span class="popular-badge">🔥 Popular</span>
+                    <div class="popular-image">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="popular-content">
+                        <h3>{{ item.name }}</h3>
+                        <p>{{ item.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="popular-price">₦{{ "{:,.0f}".format(item.price) }}</span>
+                            <button class="add-to-cart" onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            {% for category in categories %}
+            <button class="category-btn {% if loop.first %}active{% endif %}" onclick="showCategory({{ category.id }})">
+                {{ category.name }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Menu Items by Category -->
+        {% for category in categories %}
+        <div id="category-{{ category.id }}" class="menu-grid {% if loop.first %}active{% endif %}">
+            {% for item in category.items if item.available %}
+            <div class="menu-item">
+                <div class="menu-image">
+                    <i class="fas fa-{% if 'Chicken' in item.name or 'Suya' in item.name %}drumstick-bite{% elif 'Drink' in item.name or 'Juice' in item.name %}wine-glass-alt{% elif 'Cake' in item.name %}birthday-cake{% else %}utensils{% endif %}"></i>
+                </div>
+                <div class="menu-details">
+                    <h4>{{ item.name }}</h4>
+                    <p>{{ item.description }}</p>
+                    <div class="menu-footer">
+                        <span class="menu-price">₦{{ "{:,.0f}".format(item.price) }}</span>
+                        <button class="add-to-cart" onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Floating Cart Button -->
+    <div class="cart-float" onclick="toggleOrderSummary()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary" id="orderSummary">
+        <div class="order-header">
+            <h5>Your Order</h5>
+            <button class="close-order" onclick="toggleOrderSummary()">×</button>
+        </div>
+        <div class="order-items" id="orderItems">
+            <!-- Items will be added here dynamically -->
+        </div>
+        <div class="order-total">
+            <span>Total:</span>
+            <span id="orderTotal">₦0</span>
+        </div>
+        <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>About D Joint</h5>
+                        <p>Your premier entertainment destination in Lagos. Great food, exciting games, and unforgettable moments.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/menu">Menu</a></li>
+                            <li><a href="/snooker">Snooker</a></li>
+                            <li><a href="/artists">Artists</a></li>
+                            <li><a href="/book-seat">Book Seat</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-widget">
+                        <h5>Contact Info</h5>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt me-2"></i>123 Main Street, Lagos</li>
+                            <li><i class="fas fa-phone me-2"></i>+234 800 000 0000</li>
+                            <li><i class="fas fa-envelope me-2"></i>info@djoint.com</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 D Joint Lounge. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cart functionality
+        let cart = [];
+        
+        function addToCart(itemId, itemName, itemPrice) {
+            const existingItem = cart.find(item => item.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: itemId,
+                    name: itemName,
+                    price: itemPrice,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            showNotification('Added to cart!');
+        }
+        
+        function updateQuantity(itemId, change) {
+            const item = cart.find(item => item.id === itemId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== itemId);
+                }
+            }
+            updateCartDisplay();
+        }
+        
+        function updateCartDisplay() {
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+            
+            // Update order items
+            const orderItemsDiv = document.getElementById('orderItems');
+            if (cart.length === 0) {
+                orderItemsDiv.innerHTML = '<p class="text-muted text-center">Your cart is empty</p>';
+                document.getElementById('orderTotal').textContent = '₦0';
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                html += `
+                    <div class="order-item">
+                        <div class="order-item-info">
+                            <h6>${item.name}</h6>
+                            <small>₦${item.price.toLocaleString()} each</small>
+                        </div>
+                        <div class="order-item-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                            <span class="item-quantity">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            orderItemsDiv.innerHTML = html;
+            document.getElementById('orderTotal').textContent = `₦${total.toLocaleString()}`;
+        }
+        
+        function toggleOrderSummary() {
+            const summary = document.getElementById('orderSummary');
+            summary.classList.toggle('show');
+        }
+        
+        function showNotification(message) {
+            // Create and show a temporary notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+            notification.style.zIndex = '9999';
+            notification.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+        
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // Create form and submit to order page
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/order-food';
+            
+            // Add customer details fields (you might want to collect these in a modal first)
+            const name = prompt('Enter your name:');
+            const phone = prompt('Enter your phone number:');
+            const orderType = prompt('Dine in or takeaway? (dine_in/takeaway):', 'dine_in');
+            
+            if (!name || !phone) return;
+            
+            // Add form fields
+            const fields = {
+                'name': name,
+                'phone': phone,
+                'order_type': orderType || 'dine_in',
+                'total_amount': cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            };
+            
+            if (orderType === 'dine_in') {
+                const table = prompt('Table number (optional):');
+                if (table) fields.table_number = table;
+            }
+            
+            // Add cart items
+            cart.forEach(item => {
+                for (let i = 0; i < item.quantity; i++) {
+                    fields['items[]'] = item.id;
+                    fields['quantities[]'] = 1;
+                    fields['prices[]'] = item.price;
+                }
+            });
+            
+            for (let key in fields) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                if (Array.isArray(fields[key])) {
+                    fields[key].forEach(value => {
+                        const arrInput = document.createElement('input');
+                        arrInput.type = 'hidden';
+                        arrInput.name = key;
+                        arrInput.value = value;
+                        form.appendChild(arrInput);
+                    });
+                } else {
+                    input.value = fields[key];
+                    form.appendChild(input);
+                }
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        function showCategory(categoryId) {
+            // Hide all categories
+            document.querySelectorAll('.menu-grid').forEach(grid => {
+                grid.classList.remove('active');
+            });
+            
+            // Show selected category
+            document.getElementById(`category-${categoryId}`).classList.add('active');
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Close order summary when clicking outside
+        document.addEventListener('click', function(event) {
+            const summary = document.getElementById('orderSummary');
+            const cartBtn = document.querySelector('.cart-float');
+            
+            if (!summary.contains(event.target) && !cartBtn.contains(event.target) && summary.classList.contains('show')) {
+                summary.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

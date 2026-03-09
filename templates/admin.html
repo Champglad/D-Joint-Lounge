@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - D Joint Lounge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --dark: #343a40;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .badge-pending { 
+            background-color: var(--warning); 
+            color: var(--dark);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .badge-confirmed { 
+            background-color: var(--success); 
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .badge-cancelled { 
+            background-color: var(--danger); 
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .admin-info-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-confirm {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        
+        .table thead th {
+            background: var(--dark);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 10px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .quick-actions .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            font-weight: 700;
+        }
+        
+        .bookings-card {
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .bookings-card .card-header {
+            background: var(--dark);
+            color: white;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-number {
+                font-size: 1.8rem;
+            }
+            
+            .admin-info-bar {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .btn-logout {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">
+                <i class="fas fa-cocktail me-2"></i>D Joint Lounge - Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Site
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">
+                <i class="fas fa-dashboard me-2" style="color: var(--primary);"></i>
+                Admin Dashboard
+            </h1>
+        </div>
+        
+        <!-- Admin Info Bar (Protected Area Indicator) -->
+        <div class="admin-info-bar d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-user-shield me-2" style="color: var(--primary);"></i>
+                <strong>Logged in as:</strong> 
+                <span class="badge bg-primary">{{ session.admin_email }}</span>
+                <small class="text-muted ms-3">
+                    <i class="fas fa-clock me-1"></i>
+                    {{ session.admin_login_time }}
+                </small>
+            </div>
+            <div>
+                <span class="badge bg-success me-2">
+                    <i class="fas fa-lock me-1"></i>Secure Area
+                </span>
+                <a href="/admin-logout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Statistics Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">{{ total_bookings }}</div>
+                    <div class="stats-label">Total Bookings</div>
+                    <i class="fas fa-calendar-check position-absolute bottom-0 end-0 me-3 mb-3 opacity-50" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <div class="stats-number">{{ confirmed_bookings }}</div>
+                    <div class="stats-label">Confirmed</div>
+                    <i class="fas fa-check-circle position-absolute bottom-0 end-0 me-3 mb-3 opacity-50" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                    <div class="stats-number">{{ pending_bookings }}</div>
+                    <div class="stats-label">Pending</div>
+                    <i class="fas fa-clock position-absolute bottom-0 end-0 me-3 mb-3 opacity-50" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #17a2b8 0%, #0dcaf0 100%);">
+                    <div class="stats-number">{{ total_rooms }}</div>
+                    <div class="stats-label">Total Rooms</div>
+                    <i class="fas fa-door-open position-absolute bottom-0 end-0 me-3 mb-3 opacity-50" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card quick-actions">
+                    <div class="card-header">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-add w-100" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                                    <i class="fas fa-plus-circle me-2"></i>Add New Room
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/admin/orders" class="btn btn-add w-100" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                    <i class="fas fa-shopping-cart me-2"></i>Manage Orders
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/admin/artist-applications" class="btn btn-add w-100" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
+                                    <i class="fas fa-microphone-alt me-2"></i>Artist Applications
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/admin/snooker-bookings" class="btn btn-add w-100" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                                    <i class="fas fa-table-tennis me-2"></i>Snooker Bookings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Bookings Table -->
+        <div class="card bookings-card">
+            <div class="card-header">
+                <i class="fas fa-list me-2"></i>Recent Bookings
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td><strong>#{{ booking.id }}</strong></td>
+                                <td>{{ booking.customer_name }}</td>
+                                <td>{{ booking.customer_phone }}</td>
+                                <td>
+                                    {% if booking.booking_type == 'seat' %}
+                                        <span class="badge bg-info text-white">Seat</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Room</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.booking_type == 'seat' %}
+                                        <i class="fas fa-chair me-1 text-muted"></i>
+                                        Seat {{ booking.seat.seat_number if booking.seat else 'N/A' }}<br>
+                                        <small class="text-success">₦{{ "{:,.0f}".format(booking.seat.price) if booking.seat else 'N/A' }}</small>
+                                    {% else %}
+                                        <i class="fas fa-door-open me-1 text-muted"></i>
+                                        {{ booking.room.name if booking.room else 'N/A' }}<br>
+                                        <small class="text-success">{{ booking.hours }} hours</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar me-1 text-muted"></i>
+                                    {% if booking.booking_type == 'seat' %}
+                                        {{ booking.booking_date }}<br>
+                                        <small><i class="fas fa-clock me-1"></i>{{ booking.booking_time }}</small>
+                                    {% else %}
+                                        {{ booking.booking_date }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                        <span class="badge-pending">Pending</span>
+                                    {% elif booking.status == 'confirmed' %}
+                                        <span class="badge-confirmed">Confirmed</span>
+                                    {% else %}
+                                        <span class="badge-cancelled">{{ booking.status|upper }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                        <a href="/admin/confirm/{{ booking.id }}" class="btn-confirm btn-sm">
+                                            <i class="fas fa-check me-1"></i>Confirm
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <i class="fas fa-lock me-1"></i>Confirmed
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No bookings found</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Room Modal -->
+    <div class="modal fade" id="addRoomModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Room
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="/add-room">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Room Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g., VIP Party Suite" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Room Type</label>
+                            <select name="type" class="form-select">
+                                <option value="party">🎉 Party Room</option>
+                                <option value="rest">😴 Short Rest Room</option>
+                                <option value="vip">👑 VIP Room</option>
+                                <option value="regular">🪑 Regular Room</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Price per Hour (₦)</label>
+                            <input type="number" name="price" class="form-control" placeholder="e.g., 5000" min="1000" step="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Capacity (persons)</label>
+                            <input type="number" name="capacity" class="form-control" placeholder="e.g., 10" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Add Room
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Auto-refresh every 30 seconds (optional) -->
+    <script>
+        // Auto-refresh dashboard every 30 seconds to show new bookings
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

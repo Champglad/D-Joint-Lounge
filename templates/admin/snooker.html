@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Snooker - D Joint Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            position: fixed;
+            width: 250px;
+            color: white;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 800;
+        }
+        
+        .sidebar-header p {
+            margin: 5px 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .sidebar-menu i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--dark);
+        }
+        
+        .stat-info p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Tables Management */
+        .tables-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .table-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .table-card.available {
+            border: 3px solid var(--success);
+        }
+        
+        .table-card.unavailable {
+            border: 3px solid var(--danger);
+            opacity: 0.7;
+        }
+        
+        .table-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .table-type {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .table-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .table-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .status-available {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-unavailable {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Bookings Table */
+        .bookings-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table thead th {
+            background: var(--light);
+            border: none;
+            padding: 15px 20px;
+            font-weight: 700;
+        }
+        
+        .table tbody td {
+            padding: 15px 20px;
+            vertical-align: middle;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .btn-confirm {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>D Joint Admin</h3>
+            <p>Management Dashboard</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="/admin">
+                <i class="fas fa-dashboard"></i> Dashboard
+            </a>
+            <a href="/admin/orders">
+                <i class="fas fa-shopping-cart"></i> Food Orders
+            </a>
+            <a href="/admin/artist-applications">
+                <i class="fas fa-microphone"></i> Artists
+            </a>
+            <a href="/admin/snooker-bookings" class="active">
+                <i class="fas fa-table-tennis"></i> Snooker
+            </a>
+            <a href="/">
+                <i class="fas fa-arrow-left"></i> Back to Site
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h2>Snooker Management</h2>
+            <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addTableModal">
+                <i class="fas fa-plus me-2"></i>Add New Table
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ tables|length }}</h3>
+                    <p>Total Tables</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-table"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ tables|selectattr('available', 'equalto', true)|list|length }}</h3>
+                    <p>Available Now</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ bookings|length }}</h3>
+                    <p>Total Bookings</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+                    <p>Pending</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Tables Management -->
+        <div class="tables-section">
+            <div class="section-header">
+                <h4>Snooker Tables</h4>
+            </div>
+            
+            <div class="tables-grid">
+                {% for table in tables %}
+                <div class="table-card {% if table.available %}available{% else %}unavailable{% endif %}">
+                    <div class="table-number">Table {{ table.table_number }}</div>
+                    <div class="table-type">{{ table.table_type|upper }}</div>
+                    <div class="table-price">₦{{ "{:,.0f}".format(table.price_per_hour) }}/hr</div>
+                    <div class="table-status {% if table.available %}status-available{% else %}status-unavailable{% endif %}">
+                        {% if table.available %}Available{% else %}Occupied{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="bookings-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Table</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Hours</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td><strong>#{{ booking.id }}</strong></td>
+                        <td>Table {{ booking.table.table_number }}</td>
+                        <td>{{ booking.customer_name }}</td>
+                        <td>{{ booking.customer_phone }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
+                        <td>{{ booking.hours }}h</td>
+                        <td><strong>₦{{ "{:,.0f}".format(booking.total_amount) }}</strong></td>
+                        <td>
+                            <span class="status-badge status-{{ booking.status }}">
+                                {{ booking.status|upper }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                            <a href="/admin/confirm-snooker/{{ booking.id }}" class="btn-confirm">
+                                Confirm
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Table Modal -->
+    <div class="modal fade" id="addTableModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Snooker Table</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/admin/add-snooker-table">
+                        <div class="mb-3">
+                            <label class="form-label">Table Number</label>
+                            <input type="text" name="table_number" class="form-control" required placeholder="e.g., P3">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Table Type</label>
+                            <select name="table_type" class="form-select" required>
+                                <option value="pool">Pool Table</option>
+                                <option value="snooker">Snooker Table</option>
+                                <option value="vip">VIP Snooker</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Price per Hour (₦)</label>
+                            <input type="number" name="price_per_hour" class="form-control" required min="1000" step="100">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Add Table</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
