@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ bar.name }} - {{ bar.slogan }}">
+    <title>{% block title %}{{ bar.name }} - {{ bar.slogan }}{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍸</text></svg>">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: {{ bar.color }};
+            --secondary: {{ bar.secondary }};
+            --accent: #fbbf24;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--light);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        .dropdown-item {
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 50px;
+            padding: 12px 28px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-outline-light:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
+        }
+        
+        /* Flash Messages */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 15px 20px;
+        }
+        
+        /* Demo Switcher - Hidden by default */
+        .demo-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        .demo-switcher.visible {
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem !important;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+            }
+            
+            .demo-switcher {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Hidden Demo Switcher (Only visible when enabled) -->
+    <div class="demo-switcher" id="demoSwitcher">
+        <h6 style="margin-bottom: 10px; color: var(--primary); font-size: 0.9rem;">
+            <i class="fas fa-exchange-alt me-2"></i>Switch Bar (Demo Mode)
+        </h6>
+        <select id="barSwitcher" onchange="switchBar()" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd; width: 100%; margin-bottom: 8px;">
+            <option value="djoint" {% if bar_id == 'djoint' %}selected{% endif %}>🍸 D Joint Lounge</option>
+            <option value="signature" {% if bar_id == 'signature' %}selected{% endif %}>🍷 Signature Lounge</option>
+            <option value="vaniti" {% if bar_id == 'vaniti' %}selected{% endif %}>👑 Vaniti Lounge</option>
+            <option value="eagles" {% if bar_id == 'eagles' %}selected{% endif %}>🦅 Eagles Lounge</option>
+        </select>
+        <div class="d-flex gap-2">
+            <button onclick="toggleDemoMode()" class="btn btn-sm btn-outline-secondary w-100" style="font-size: 11px; padding: 5px;">
+                <i class="fas fa-eye-slash me-1"></i>Hide
+            </button>
+            <small class="text-muted" style="font-size: 9px; display: flex; align-items: center;">
+                <i class="fas fa-mouse-pointer me-1"></i>Triple-click logo
+            </small>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/?bar={{ bar_id }}" id="mainLogo">
+                <i class="fas fa-{{ bar.logo }} me-2"></i>{{ bar.name }}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/?bar={{ bar_id }}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/book-seat?bar={{ bar_id }}">
+                                <i class="fas fa-ticket-alt me-2"></i>Book Match Seat
+                            </a></li>
+                            <li><a class="dropdown-item" href="/book-room?bar={{ bar_id }}">
+                                <i class="fas fa-bed me-2"></i>Book Rest Room
+                            </a></li>
+                            <li><a class="dropdown-item" href="/snooker?bar={{ bar_id }}">
+                                <i class="fas fa-table-tennis me-2"></i>Snooker & Pool
+                            </a></li>
+                            <li><a class="dropdown-item" href="/artists?bar={{ bar_id }}">
+                                <i class="fas fa-microphone-alt me-2"></i>Live Artists
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/menu?bar={{ bar_id }}">
+                                <i class="fas fa-utensils me-2"></i>Food Menu
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu?bar={{ bar_id }}">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/snooker?bar={{ bar_id }}">Snooker</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/artists?bar={{ bar_id }}">Artists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/book-seat?bar={{ bar_id }}">Book Seat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings?bar={{ bar_id }}">My Bookings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="margin-top: 76px;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3" style="color: var(--primary);">{{ bar.name }}</h5>
+                    <p class="text-muted">{{ bar.slogan }}</p>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-2 opacity-50"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2 opacity-50"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2 opacity-50"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-2 opacity-50"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/?bar={{ bar_id }}" class="text-muted text-decoration-none">Home</a></li>
+                        <li><a href="/menu?bar={{ bar_id }}" class="text-muted text-decoration-none">Menu</a></li>
+                        <li><a href="/snooker?bar={{ bar_id }}" class="text-muted text-decoration-none">Snooker</a></li>
+                        <li><a href="/artists?bar={{ bar_id }}" class="text-muted text-decoration-none">Artists</a></li>
+                        <li><a href="/my-bookings?bar={{ bar_id }}" class="text-muted text-decoration-none">My Bookings</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Contact Info</h5>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ bar.address }}</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>{{ bar.phone }}</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>{{ bar.email }}</li>
+                        <li class="mb-2"><i class="fas fa-clock me-2"></i>Open 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <div class="text-center text-muted small">
+                <p>&copy; 2026 {{ bar.name }}. All rights reserved.</p>
+                <p class="mb-0">
+                    <i class="fas fa-cocktail me-1" style="color: var(--primary);"></i>
+                    Powered by <strong>ChampgladTechLtd</strong>
+                </p>
+                <p class="mt-2">
+                    <a href="/admin-login?bar={{ bar_id }}" class="staff-login">Staff Login</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Demo mode state (persist across page loads)
+        let demoModeEnabled = localStorage.getItem('demoMode') === 'true';
+        
+        // Show/hide demo switcher
+        function updateDemoSwitcherVisibility() {
+            const switcher = document.getElementById('demoSwitcher');
+            if (demoModeEnabled) {
+                switcher.classList.add('visible');
+            } else {
+                switcher.classList.remove('visible');
+            }
+        }
+        
+        // Toggle demo mode
+        function toggleDemoMode() {
+            demoModeEnabled = !demoModeEnabled;
+            localStorage.setItem('demoMode', demoModeEnabled);
+            updateDemoSwitcherVisibility();
+        }
+        
+        // Switch between bars
+        function switchBar() {
+            const select = document.getElementById('barSwitcher');
+            const selectedBar = select.value;
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('bar', selectedBar);
+            // Preserve debug mode if needed
+            if (currentUrl.searchParams.get('debug') === 'show') {
+                currentUrl.searchParams.set('debug', 'show');
+            }
+            window.location.href = currentUrl.toString();
+        }
+        
+        // Secret trigger: Triple click logo to toggle demo mode
+        let logoClickCount = 0;
+        let logoClickTimer;
+        
+        document.querySelector('.navbar-brand')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            logoClickCount++;
+            clearTimeout(logoClickTimer);
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
+            
+            if (logoClickCount === 3) {
+                logoClickCount = 0;
+                toggleDemoMode();
+                // Optional: Show feedback
+                const msg = demoModeEnabled ? 'Demo mode ON - Switcher visible' : 'Demo mode OFF - Switcher hidden';
+                console.log(msg);
+            }
+        });
+        
+        // Keyboard shortcut: Ctrl+Shift+D to toggle demo mode
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleDemoMode();
+            }
+        });
+        
+        // Initialize on page load
+        updateDemoSwitcherVisibility();
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
