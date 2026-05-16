@@ -151,6 +151,18 @@
             display: block;
         }
         
+        /* Staff Login Link */
+        .staff-login {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .staff-login:hover {
+            color: var(--primary);
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
@@ -315,6 +327,21 @@
             offset: 100
         });
         
+        // Get current bar from URL or session
+        const currentBar = '{{ bar_id }}';
+        
+        // Auto-preserve bar parameter in ALL links (fixes bar persistence)
+        function preserveBarInLinks() {
+            document.querySelectorAll('a').forEach(link => {
+                const url = new URL(link.href, window.location.origin);
+                // Only modify internal links that don't already have bar parameter
+                if (link.href.startsWith(window.location.origin) && !url.searchParams.has('bar')) {
+                    url.searchParams.set('bar', currentBar);
+                    link.href = url.toString();
+                }
+            });
+        }
+        
         // Demo mode state (persist across page loads)
         let demoModeEnabled = localStorage.getItem('demoMode') === 'true';
         
@@ -333,39 +360,37 @@
             demoModeEnabled = !demoModeEnabled;
             localStorage.setItem('demoMode', demoModeEnabled);
             updateDemoSwitcherVisibility();
+            // Show toast notification (optional)
+            const msg = demoModeEnabled ? 'Demo mode ON - Switcher visible' : 'Demo mode OFF - Switcher hidden';
+            console.log(msg);
         }
         
-        // Switch between bars
+        // Switch between bars - Uses updated set-bar route
         function switchBar() {
             const select = document.getElementById('barSwitcher');
             const selectedBar = select.value;
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('bar', selectedBar);
-            // Preserve debug mode if needed
-            if (currentUrl.searchParams.get('debug') === 'show') {
-                currentUrl.searchParams.set('debug', 'show');
-            }
-            window.location.href = currentUrl.toString();
+            const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/set-bar/${selectedBar}?redirect=${redirectUrl}`;
         }
         
         // Secret trigger: Triple click logo to toggle demo mode
         let logoClickCount = 0;
         let logoClickTimer;
         
-        document.querySelector('.navbar-brand')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            logoClickCount++;
-            clearTimeout(logoClickTimer);
-            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
-            
-            if (logoClickCount === 3) {
-                logoClickCount = 0;
-                toggleDemoMode();
-                // Optional: Show feedback
-                const msg = demoModeEnabled ? 'Demo mode ON - Switcher visible' : 'Demo mode OFF - Switcher hidden';
-                console.log(msg);
-            }
-        });
+        const logo = document.querySelector('.navbar-brand');
+        if (logo) {
+            logo.addEventListener('click', function(e) {
+                e.preventDefault();
+                logoClickCount++;
+                clearTimeout(logoClickTimer);
+                logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
+                
+                if (logoClickCount === 3) {
+                    logoClickCount = 0;
+                    toggleDemoMode();
+                }
+            });
+        }
         
         // Keyboard shortcut: Ctrl+Shift+D to toggle demo mode
         document.addEventListener('keydown', function(e) {
@@ -377,6 +402,7 @@
         
         // Initialize on page load
         updateDemoSwitcherVisibility();
+        preserveBarInLinks();
     </script>
     
     {% block extra_js %}{% endblock %}
