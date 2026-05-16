@@ -27,7 +27,7 @@ def admin_required(f):
 # Database Models
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     name = db.Column(db.String(100), nullable=False)
     room_type = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
@@ -39,7 +39,7 @@ class Room(db.Model):
 
 class Seat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     seat_number = db.Column(db.String(10), nullable=False)
     seat_type = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
@@ -51,7 +51,7 @@ class Seat(db.Model):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     customer_name = db.Column(db.String(100), nullable=False)
     customer_phone = db.Column(db.String(20), nullable=False)
     booking_type = db.Column(db.String(20), nullable=False)  # 'seat' or 'room'
@@ -79,14 +79,14 @@ class Booking(db.Model):
 # Food Menu Models
 class FoodCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     name = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200), default='category-default.jpg')
     items = db.relationship('FoodItem', backref='category', lazy=True)
 
 class FoodItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     category_id = db.Column(db.Integer, db.ForeignKey('food_category.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
@@ -97,37 +97,37 @@ class FoodItem(db.Model):
 
 class FoodOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     customer_name = db.Column(db.String(100), nullable=False)
     customer_phone = db.Column(db.String(20), nullable=False)
-    table_number = db.Column(db.String(10))  # For dine-in
-    order_type = db.Column(db.String(20))  # 'dine_in', 'takeaway'
+    table_number = db.Column(db.String(10))
+    order_type = db.Column(db.String(20))
     total_amount = db.Column(db.Integer)
-    status = db.Column(db.String(20), default='pending')  # pending, preparing, ready, delivered
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     items = db.relationship('OrderItem', backref='order', lazy=True)
 
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     order_id = db.Column(db.Integer, db.ForeignKey('food_order.id'), nullable=False)
     food_item_id = db.Column(db.Integer, db.ForeignKey('food_item.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
-    price = db.Column(db.Integer)  # Price at time of order
+    price = db.Column(db.Integer)
     food_item = db.relationship('FoodItem')
 
 # Snooker/Pool Tables
 class SnookerTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     table_number = db.Column(db.String(10), nullable=False)
-    table_type = db.Column(db.String(20))  # 'pool', 'snooker'
+    table_type = db.Column(db.String(20))
     price_per_hour = db.Column(db.Integer, nullable=False)
     available = db.Column(db.Boolean, default=True)
 
 class SnookerBooking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     table_id = db.Column(db.Integer, db.ForeignKey('snooker_table.id'), nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     customer_phone = db.Column(db.String(20), nullable=False)
@@ -143,27 +143,27 @@ class SnookerBooking(db.Model):
 # DJ/Artist Platform
 class Artist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     stage_name = db.Column(db.String(100), nullable=False)
     real_name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     phone = db.Column(db.String(20), nullable=False)
     genre = db.Column(db.String(50))
     bio = db.Column(db.Text)
-    social_media = db.Column(db.JSON)  # Store Instagram, Twitter, TikTok links
-    music_links = db.Column(db.JSON)  # Store SoundCloud, YouTube links
+    social_media = db.Column(db.JSON)
+    music_links = db.Column(db.JSON)
     photo = db.Column(db.String(200))
-    status = db.Column(db.String(20), default='pending')  # pending, approved, featured
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Performance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bar_id = db.Column(db.String(50), default='djoint')  # Add multi-bar support
+    bar_id = db.Column(db.String(50), default='djoint')
     artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), nullable=False)
     performance_date = db.Column(db.String(20), nullable=False)
     start_time = db.Column(db.String(20), nullable=False)
     end_time = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), default='scheduled')  # scheduled, completed, cancelled
+    status = db.Column(db.String(20), default='scheduled')
     artist = db.relationship('Artist')
 
 # ============ MULTI-BAR SUPPORT ============
@@ -171,13 +171,9 @@ class Performance(db.Model):
 @app.context_processor
 def inject_bar_settings():
     """Inject bar settings based on URL parameter"""
-    # Get bar name from URL parameter, default to djoint
     bar_id = request.args.get('bar', 'djoint')
-    
-    # Store in session for consistent use across requests
     session['current_bar'] = bar_id
     
-    # Bar configurations
     bars = {
         'djoint': {
             'id': 'djoint',
@@ -225,19 +221,45 @@ def inject_bar_settings():
         }
     }
     
-    # Get current bar or default
     current_bar = bars.get(bar_id, bars['djoint'])
-    
     return dict(bar=current_bar, bar_id=bar_id, bars=bars)
 
 # Debug switcher (only shows when debug=show in URL)
 @app.context_processor
 def inject_debug_switcher():
-    """Add debug switcher for demos"""
     show_debug = request.args.get('debug') == 'show'
     return dict(show_debug=show_debug)
 
-# Create tables with sample data
+# Context processor for current time
+@app.context_processor
+def utility_processor():
+    return {'now': datetime.now}
+
+# ============ DEMO MODE ROUTES (NEW) ============
+
+@app.route('/demo-mode/<action>')
+def demo_mode(action):
+    """Toggle demo mode - shows/hides the bar switcher"""
+    if action == 'on':
+        session['demo_mode'] = True
+        flash('Demo mode enabled. Bar switcher visible.', 'info')
+    elif action == 'off':
+        session['demo_mode'] = False
+        flash('Demo mode disabled.', 'info')
+    elif action == 'toggle':
+        session['demo_mode'] = not session.get('demo_mode', False)
+        status = 'enabled' if session['demo_mode'] else 'disabled'
+        flash(f'Demo mode {status}.', 'info')
+    
+    return redirect(request.referrer or url_for('home'))
+
+# Add demo_mode to all templates
+@app.context_processor
+def inject_demo_mode():
+    return {'demo_mode_enabled': session.get('demo_mode', False)}
+
+# ============ CREATE TABLES WITH SAMPLE DATA ============
+
 with app.app_context():
     db.create_all()
     
@@ -283,7 +305,8 @@ with app.app_context():
     
     db.session.commit()
 
-# Admin Login Routes
+# ============ ADMIN LOGIN ROUTES ============
+
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     bar_id = session.get('current_bar', 'djoint')
@@ -291,7 +314,6 @@ def admin_login():
         email = request.form['email']
         password = request.form['password']
         
-        # In production, check against database with bar_id
         if email == f'admin@{bar_id}.com' and password == 'Admin123!':
             session['admin_logged_in'] = True
             session['admin_email'] = email
@@ -314,7 +336,8 @@ def admin_logout():
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('home'))
 
-# Customer Routes
+# ============ CUSTOMER ROUTES ============
+
 @app.route('/')
 def home():
     bar_id = session.get('current_bar', 'djoint')
@@ -384,7 +407,6 @@ def menu():
 def order_food():
     bar_id = session.get('current_bar', 'djoint')
     if request.method == 'POST':
-        # Create new order
         order = FoodOrder(
             bar_id=bar_id,
             customer_name=request.form['name'],
@@ -395,9 +417,8 @@ def order_food():
             status='pending'
         )
         db.session.add(order)
-        db.session.flush()  # Get order ID
+        db.session.flush()
         
-        # Add order items
         items = request.form.getlist('items[]')
         quantities = request.form.getlist('quantities[]')
         prices = request.form.getlist('prices[]')
@@ -417,7 +438,6 @@ def order_food():
         flash('Order placed successfully!', 'success')
         return redirect(url_for('order_confirmation', order_id=order.id))
     
-    # GET request - show order form
     categories = FoodCategory.query.filter_by(bar_id=bar_id).all()
     items = FoodItem.query.filter_by(bar_id=bar_id, available=True).all()
     return render_template('order_food.html', categories=categories, items=items)
@@ -438,7 +458,6 @@ def snooker():
 def book_snooker():
     bar_id = session.get('current_bar', 'djoint')
     if request.method == 'POST':
-        # Calculate end time
         start = request.form['start_time']
         hours = int(request.form['hours'])
         end_hour = int(start.split(':')[0]) + hours
@@ -519,7 +538,6 @@ def admin_dashboard():
     rooms = Room.query.filter_by(bar_id=bar_id).all()
     seats = Seat.query.filter_by(bar_id=bar_id).all()
     
-    # Statistics
     total_bookings = Booking.query.filter_by(bar_id=bar_id).count()
     confirmed_bookings = Booking.query.filter_by(bar_id=bar_id, status='confirmed').count()
     pending_bookings = Booking.query.filter_by(bar_id=bar_id, status='pending').count()
@@ -559,7 +577,6 @@ def add_room():
     flash('New room added successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# Admin Routes for New Features
 @app.route('/admin/orders')
 @admin_required
 def admin_orders():
@@ -661,11 +678,6 @@ def add_snooker_table():
     db.session.commit()
     flash('New snooker table added successfully!', 'success')
     return redirect(url_for('admin_snooker_bookings'))
-
-# Context processor to make 'now' available in all templates
-@app.context_processor
-def utility_processor():
-    return {'now': datetime.now}
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
