@@ -556,4 +556,248 @@
         renderSeats();
     </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Seat - D Joint Lounge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .booking-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 0 40px;
+            margin-bottom: 40px;
+        }
+        
+        .booking-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .seat-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .seat-card .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            font-weight: 700;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 12px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-book {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .seat-option {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .seat-option:hover {
+            background: #e2e8f0;
+            transform: translateX(5px);
+        }
+        
+        .seat-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+        }
+        
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .booking-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-cocktail me-2"></i>D Joint Lounge
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="booking-header">
+        <div class="container text-center">
+            <h1><i class="fas fa-ticket-alt me-3"></i>Book a Seat</h1>
+            <p class="lead mb-0">Select your preferred seat for the ultimate match experience</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="seat-card">
+                    <div class="card-header">
+                        <h3 class="mb-0"><i class="fas fa-chair me-2"></i>Select Your Seat</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Your Name</label>
+                                    <input type="text" name="name" class="form-control" required placeholder="Enter your full name">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Phone Number</label>
+                                    <input type="tel" name="phone" class="form-control" required placeholder="e.g., 08012345678">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Select Seat</label>
+                                <select name="seat_id" class="form-select" required style="padding: 12px;">
+                                    <option value="">Choose a seat...</option>
+                                    {% for seat in seats %}
+                                        <option value="{{ seat.id }}" data-price="{{ seat.price }}" data-type="{{ seat.seat_type }}">
+                                            🪑 {{ seat.seat_number }} - 
+                                            {% if seat.seat_type == 'vip' %}👑 VIP (₦{{ seat.price }}){% elif seat.seat_type == 'couple' %}💑 Couple (₦{{ seat.price }}){% else %}🪑 Regular (₦{{ seat.price }}){% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Date</label>
+                                    <input type="date" name="date" class="form-control" required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Time</label>
+                                    <input type="time" name="time" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>VIP Benefits:</strong> Premium leather seats, personal waiter service, best view, complimentary drink
+                            </div>
+                            
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="submit" class="btn btn-book flex-grow-1">
+                                    <i class="fas fa-check-circle me-2"></i>Confirm Booking
+                                </button>
+                                <a href="/" class="btn btn-outline-secondary px-4">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[type="date"]').setAttribute('min', today);
+        
+        // Add animation to seat selection
+        const seatSelect = document.querySelector('select[name="seat_id"]');
+        seatSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            const type = selectedOption.getAttribute('data-type');
+            
+            if (price) {
+                // Optional: show price preview
+                console.log(`Selected ${type} seat: ₦${price}`);
+            }
+        });
+    </script>
+</body>
 </html>
