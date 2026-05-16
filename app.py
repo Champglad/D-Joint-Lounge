@@ -171,7 +171,7 @@ class Performance(db.Model):
 @app.context_processor
 def inject_bar_settings():
     """Inject bar settings based on URL parameter"""
-    bar_id = request.args.get('bar', 'djoint')
+    bar_id = request.args.get('bar', session.get('current_bar', 'djoint'))
     session['current_bar'] = bar_id
     
     bars = {
@@ -235,7 +235,7 @@ def inject_debug_switcher():
 def utility_processor():
     return {'now': datetime.now}
 
-# ============ DEMO MODE ROUTES (NEW) ============
+# ============ DEMO MODE ROUTES ============
 
 @app.route('/demo-mode/<action>')
 def demo_mode(action):
@@ -257,6 +257,30 @@ def demo_mode(action):
 @app.context_processor
 def inject_demo_mode():
     return {'demo_mode_enabled': session.get('demo_mode', False)}
+
+# ============ BAR SWITCHER ROUTE (NEW - FIXES PERSISTENCE) ============
+
+@app.route('/set-bar/<bar_id>')
+def set_bar(bar_id):
+    """Force set the current bar and redirect back to the same page"""
+    if bar_id in ['djoint', 'signature', 'vaniti', 'eagles']:
+        session['current_bar'] = bar_id
+        # Get the page to redirect back to
+        redirect_to = request.args.get('redirect', url_for('home'))
+        flash(f'Switched to {bars.get(bar_id, {}).get("name", bar_id.title())}', 'info')
+        return redirect(redirect_to)
+    return redirect(url_for('home'))
+
+# Make bars available in templates
+@app.context_processor
+def inject_bars():
+    bars = {
+        'djoint': 'D Joint Lounge',
+        'signature': 'Signature Lounge', 
+        'vaniti': 'Vaniti Lounge',
+        'eagles': 'Eagles Lounge'
+    }
+    return {'all_bars': bars}
 
 # ============ CREATE TABLES WITH SAMPLE DATA ============
 
