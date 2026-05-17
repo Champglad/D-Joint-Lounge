@@ -319,37 +319,65 @@
             offset: 100
         });
         
-        // Get the current bar from the page
-        let currentBar = '{{ bar_id }}';
-        
-        // Also check URL bar parameter (overrides everything)
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlBar = urlParams.get('bar');
-        if (urlBar) {
-            currentBar = urlBar;
+        // Get current bar from URL or localStorage
+        function getCurrentBar() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const barFromUrl = urlParams.get('bar');
+            if (barFromUrl) {
+                localStorage.setItem('currentBar', barFromUrl);
+                return barFromUrl;
+            }
+            return localStorage.getItem('currentBar') || '{{ bar_id }}';
         }
         
-        // FORCE FIX: Rewrite ALL links to include bar parameter
+        let currentBar = getCurrentBar();
+        
+        // FORCE REWRITE ALL internal links to include bar parameter
         function fixAllLinks() {
             document.querySelectorAll('a').forEach(link => {
                 const href = link.getAttribute('href');
-                if (href && !href.startsWith('javascript:') && !href.startsWith('#') && !href.startsWith('mailto:')) {
-                    try {
-                        const url = new URL(link.href, window.location.origin);
-                        // ALWAYS set bar parameter to current bar
+                // Skip external and special links
+                if (!href || href.startsWith('javascript:') || href.startsWith('#') || 
+                    href.startsWith('mailto:') || href.startsWith('tel:')) {
+                    return;
+                }
+                
+                // Skip external URLs
+                if (href.startsWith('http') && !href.includes(window.location.hostname)) {
+                    return;
+                }
+                
+                try {
+                    let url;
+                    if (href.startsWith('/')) {
+                        url = new URL(href, window.location.origin);
+                    } else {
+                        url = new URL(href, window.location.href);
+                    }
+                    
+                    // Only modify same-origin links
+                    if (url.origin === window.location.origin) {
+                        // Force set bar parameter
                         url.searchParams.set('bar', currentBar);
                         link.href = url.toString();
-                    } catch(e) {
-                        // Skip invalid URLs
                     }
+                } catch(e) {
+                    // Skip invalid URLs
                 }
             });
         }
         
-        // Run immediately and after any delay
+        // Run link fixing multiple times
         fixAllLinks();
         setTimeout(fixAllLinks, 100);
         setTimeout(fixAllLinks, 500);
+        setTimeout(fixAllLinks, 1000);
+        
+        // Watch for dynamically added links (dropdown menus, etc.)
+        const linkObserver = new MutationObserver(function(mutations) {
+            fixAllLinks();
+        });
+        linkObserver.observe(document.body, { childList: true, subtree: true });
         
         // Demo mode functions
         let demoModeEnabled = localStorage.getItem('demoMode') === 'true';
@@ -377,8 +405,15 @@
                 const selectedBar = select.value;
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('bar', selectedBar);
+                localStorage.setItem('currentBar', selectedBar);
                 window.location.href = currentUrl.toString();
             }
+        }
+        
+        // Update switcher dropdown to match current bar
+        const barSwitcher = document.getElementById('barSwitcher');
+        if (barSwitcher) {
+            barSwitcher.value = currentBar;
         }
         
         // Triple click logo
