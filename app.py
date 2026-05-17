@@ -14,6 +14,54 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# ============ BAR CONFIGURATION (MAKE GLOBAL) ============
+BARS = {
+    'djoint': {
+        'id': 'djoint',
+        'name': 'D Joint Lounge',
+        'address': '123 Main Street, Lagos',
+        'phone': '+234 800 000 0000',
+        'email': 'info@djoint.com',
+        'color': '#667eea',
+        'secondary': '#764ba2',
+        'logo': 'cocktail',
+        'slogan': 'Premier Viewing Center & Relaxation Spot'
+    },
+    'signature': {
+        'id': 'signature',
+        'name': 'Signature Lounge',
+        'address': '45 Victoria Island, Lagos',
+        'phone': '+234 800 111 2222',
+        'email': 'info@signaturelounge.ng',
+        'color': '#c026d3',
+        'secondary': '#a21caf',
+        'logo': 'wine-glass-alt',
+        'slogan': 'Where Style Meets Comfort'
+    },
+    'vaniti': {
+        'id': 'vaniti',
+        'name': 'Vaniti Lounge',
+        'address': '12 Ikoyi Road, Lagos',
+        'phone': '+234 800 333 4444',
+        'email': 'bookings@vaniti.ng',
+        'color': '#2563eb',
+        'secondary': '#1d4ed8',
+        'logo': 'crown',
+        'slogan': 'Experience Luxury Redefined'
+    },
+    'eagles': {
+        'id': 'eagles',
+        'name': 'Eagles Lounge',
+        'address': '78 Abeokuta Expressway',
+        'phone': '+234 800 555 6666',
+        'email': 'info@eagleslounge.ng',
+        'color': '#16a34a',
+        'secondary': '#15803d',
+        'logo': 'dove',
+        'slogan': 'Your Home Away From Home'
+    }
+}
+
 # Admin login required decorator
 def admin_required(f):
     @wraps(f)
@@ -24,7 +72,8 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Database Models
+# ============ DATABASE MODELS ============
+
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bar_id = db.Column(db.String(50), default='djoint')
@@ -170,59 +219,18 @@ class Performance(db.Model):
 
 @app.context_processor
 def inject_bar_settings():
-    """Inject bar settings based on URL parameter"""
-    bar_id = request.args.get('bar', session.get('current_bar', 'djoint'))
-    session['current_bar'] = bar_id
+    """Inject bar settings based on URL parameter - URL takes priority"""
+    # URL parameter has HIGHEST priority
+    url_bar = request.args.get('bar')
     
-    bars = {
-        'djoint': {
-            'id': 'djoint',
-            'name': 'D Joint Lounge',
-            'address': '123 Main Street, Lagos',
-            'phone': '+234 800 000 0000',
-            'email': 'info@djoint.com',
-            'color': '#667eea',
-            'secondary': '#764ba2',
-            'logo': 'cocktail',
-            'slogan': 'Premier Viewing Center & Relaxation Spot'
-        },
-        'signature': {
-            'id': 'signature',
-            'name': 'Signature Lounge',
-            'address': '45 Victoria Island, Lagos',
-            'phone': '+234 800 111 2222',
-            'email': 'info@signaturelounge.ng',
-            'color': '#c026d3',
-            'secondary': '#a21caf',
-            'logo': 'wine-glass-alt',
-            'slogan': 'Where Style Meets Comfort'
-        },
-        'vaniti': {
-            'id': 'vaniti',
-            'name': 'Vaniti Lounge',
-            'address': '12 Ikoyi Road, Lagos',
-            'phone': '+234 800 333 4444',
-            'email': 'bookings@vaniti.ng',
-            'color': '#2563eb',
-            'secondary': '#1d4ed8',
-            'logo': 'crown',
-            'slogan': 'Experience Luxury Redefined'
-        },
-        'eagles': {
-            'id': 'eagles',
-            'name': 'Eagles Lounge',
-            'address': '78 Abeokuta Expressway',
-            'phone': '+234 800 555 6666',
-            'email': 'info@eagleslounge.ng',
-            'color': '#16a34a',
-            'secondary': '#15803d',
-            'logo': 'dove',
-            'slogan': 'Your Home Away From Home'
-        }
-    }
+    if url_bar:
+        bar_id = url_bar
+        session['current_bar'] = bar_id
+    else:
+        bar_id = session.get('current_bar', 'djoint')
     
-    current_bar = bars.get(bar_id, bars['djoint'])
-    return dict(bar=current_bar, bar_id=bar_id, bars=bars)
+    current_bar = BARS.get(bar_id, BARS['djoint'])
+    return dict(bar=current_bar, bar_id=bar_id, bars=BARS)
 
 # Debug switcher (only shows when debug=show in URL)
 @app.context_processor
@@ -258,29 +266,19 @@ def demo_mode(action):
 def inject_demo_mode():
     return {'demo_mode_enabled': session.get('demo_mode', False)}
 
-# ============ BAR SWITCHER ROUTE (NEW - FIXES PERSISTENCE) ============
+# ============ BAR SWITCHER ROUTE (FIXES PERSISTENCE) ============
 
 @app.route('/set-bar/<bar_id>')
 def set_bar(bar_id):
     """Force set the current bar and redirect back to the same page"""
-    if bar_id in ['djoint', 'signature', 'vaniti', 'eagles']:
+    if bar_id in BARS:
         session['current_bar'] = bar_id
         # Get the page to redirect back to
         redirect_to = request.args.get('redirect', url_for('home'))
-        flash(f'Switched to {bars.get(bar_id, {}).get("name", bar_id.title())}', 'info')
+        bar_name = BARS.get(bar_id, {}).get('name', bar_id.title())
+        flash(f'Switched to {bar_name}', 'info')
         return redirect(redirect_to)
     return redirect(url_for('home'))
-
-# Make bars available in templates
-@app.context_processor
-def inject_bars():
-    bars = {
-        'djoint': 'D Joint Lounge',
-        'signature': 'Signature Lounge', 
-        'vaniti': 'Vaniti Lounge',
-        'eagles': 'Eagles Lounge'
-    }
-    return {'all_bars': bars}
 
 # ============ CREATE TABLES WITH SAMPLE DATA ============
 
