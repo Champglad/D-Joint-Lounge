@@ -35,7 +35,6 @@
             overflow-x: hidden;
         }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -49,7 +48,6 @@
             border-radius: 4px;
         }
         
-        /* Navigation */
         .navbar {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -88,7 +86,6 @@
             color: white;
         }
         
-        /* Buttons */
         .btn {
             border-radius: 50px;
             padding: 12px 28px;
@@ -112,7 +109,6 @@
             color: var(--primary);
         }
         
-        /* Cards */
         .card {
             border: none;
             border-radius: 20px;
@@ -126,14 +122,12 @@
             box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
         }
         
-        /* Flash Messages */
         .alert {
             border-radius: 10px;
             border: none;
             padding: 15px 20px;
         }
         
-        /* Demo Switcher - Hidden by default */
         .demo-switcher {
             position: fixed;
             bottom: 20px;
@@ -151,7 +145,6 @@
             display: block;
         }
         
-        /* Staff Login Link */
         .staff-login {
             color: #999;
             text-decoration: none;
@@ -163,7 +156,6 @@
             color: var(--primary);
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem !important;
@@ -184,7 +176,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Hidden Demo Switcher (Only visible when enabled) -->
+    <!-- Hidden Demo Switcher -->
     <div class="demo-switcher" id="demoSwitcher">
         <h6 style="margin-bottom: 10px; color: var(--primary); font-size: 0.9rem;">
             <i class="fas fa-exchange-alt me-2"></i>Switch Bar (Demo Mode)
@@ -327,56 +319,71 @@
             offset: 100
         });
         
-        // Get current bar from URL or session
-        const currentBar = '{{ bar_id }}';
+        // Get the current bar from the page
+        let currentBar = '{{ bar_id }}';
         
-        // Auto-preserve bar parameter in ALL links (fixes bar persistence)
-        function preserveBarInLinks() {
+        // Also check URL bar parameter (overrides everything)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlBar = urlParams.get('bar');
+        if (urlBar) {
+            currentBar = urlBar;
+        }
+        
+        // FORCE FIX: Rewrite ALL links to include bar parameter
+        function fixAllLinks() {
             document.querySelectorAll('a').forEach(link => {
-                const url = new URL(link.href, window.location.origin);
-                // Only modify internal links that don't already have bar parameter
-                if (link.href.startsWith(window.location.origin) && !url.searchParams.has('bar')) {
-                    url.searchParams.set('bar', currentBar);
-                    link.href = url.toString();
+                const href = link.getAttribute('href');
+                if (href && !href.startsWith('javascript:') && !href.startsWith('#') && !href.startsWith('mailto:')) {
+                    try {
+                        const url = new URL(link.href, window.location.origin);
+                        // ALWAYS set bar parameter to current bar
+                        url.searchParams.set('bar', currentBar);
+                        link.href = url.toString();
+                    } catch(e) {
+                        // Skip invalid URLs
+                    }
                 }
             });
         }
         
-        // Demo mode state (persist across page loads)
+        // Run immediately and after any delay
+        fixAllLinks();
+        setTimeout(fixAllLinks, 100);
+        setTimeout(fixAllLinks, 500);
+        
+        // Demo mode functions
         let demoModeEnabled = localStorage.getItem('demoMode') === 'true';
         
-        // Show/hide demo switcher
         function updateDemoSwitcherVisibility() {
             const switcher = document.getElementById('demoSwitcher');
-            if (demoModeEnabled) {
-                switcher.classList.add('visible');
-            } else {
-                switcher.classList.remove('visible');
+            if (switcher) {
+                if (demoModeEnabled) {
+                    switcher.classList.add('visible');
+                } else {
+                    switcher.classList.remove('visible');
+                }
             }
         }
         
-        // Toggle demo mode
         function toggleDemoMode() {
             demoModeEnabled = !demoModeEnabled;
             localStorage.setItem('demoMode', demoModeEnabled);
             updateDemoSwitcherVisibility();
-            // Show toast notification (optional)
-            const msg = demoModeEnabled ? 'Demo mode ON - Switcher visible' : 'Demo mode OFF - Switcher hidden';
-            console.log(msg);
         }
         
-        // Switch between bars - Uses updated set-bar route
         function switchBar() {
             const select = document.getElementById('barSwitcher');
-            const selectedBar = select.value;
-            const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/set-bar/${selectedBar}?redirect=${redirectUrl}`;
+            if (select) {
+                const selectedBar = select.value;
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('bar', selectedBar);
+                window.location.href = currentUrl.toString();
+            }
         }
         
-        // Secret trigger: Triple click logo to toggle demo mode
+        // Triple click logo
         let logoClickCount = 0;
         let logoClickTimer;
-        
         const logo = document.querySelector('.navbar-brand');
         if (logo) {
             logo.addEventListener('click', function(e) {
@@ -384,7 +391,6 @@
                 logoClickCount++;
                 clearTimeout(logoClickTimer);
                 logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
-                
                 if (logoClickCount === 3) {
                     logoClickCount = 0;
                     toggleDemoMode();
@@ -392,7 +398,7 @@
             });
         }
         
-        // Keyboard shortcut: Ctrl+Shift+D to toggle demo mode
+        // Ctrl+Shift+D shortcut
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.shiftKey && e.key === 'D') {
                 e.preventDefault();
@@ -400,9 +406,7 @@
             }
         });
         
-        // Initialize on page load
         updateDemoSwitcherVisibility();
-        preserveBarInLinks();
     </script>
     
     {% block extra_js %}{% endblock %}
