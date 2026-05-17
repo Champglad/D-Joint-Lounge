@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from functools import wraps
+from urllib.parse import urlencode
 
 app = Flask(__name__)
 app.secret_key = 'djoint-secret-key-2026'  # In production, use environment variable
@@ -13,6 +14,39 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'dj
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+# ============ MIDDLEWARE TO PRESERVE BAR IN ALL REQUESTS ============
+@app.before_request
+def preserve_bar_in_url():
+    """Automatically add bar parameter to all URLs if missing"""
+    # Skip static files and auth routes
+    if request.endpoint in ['static', 'admin_login', 'admin_logout', 'set_bar', 'demo_mode']:
+        return None
+    
+    # Skip POST requests
+    if request.method == 'POST':
+        return None
+    
+    # Get bar from URL or session
+    url_bar = request.args.get('bar')
+    session_bar = session.get('current_bar', 'djoint')
+    
+    # If bar in URL but different from session, update session
+    if url_bar and url_bar != session_bar:
+        session['current_bar'] = url_bar
+        return None
+    
+    # If no bar in URL but session has bar, redirect to add it
+    if not url_bar and session_bar:
+        # Get current URL parameters
+        args = {k: v for k, v in request.args.items()}
+        args['bar'] = session_bar
+        
+        # Build new URL
+        new_url = f"{request.base_url}?{urlencode(args)}"
+        return redirect(new_url)
+    
+    return None
 
 # ============ BAR CONFIGURATION (MAKE GLOBAL) ============
 BARS = {
@@ -61,6 +95,19 @@ BARS = {
         'slogan': 'Your Home Away From Home'
     }
 }
+
+# Helper function to get current bar
+def get_current_bar():
+    """Get current bar from URL or session, ensuring consistency"""
+    # URL parameter has highest priority
+    url_bar = request.args.get('bar')
+    if url_bar:
+        session['current_bar'] = url_bar
+        return url_bar
+    
+    # Then check session
+    session_bar = session.get('current_bar', 'djoint')
+    return session_bar
 
 # Admin login required decorator
 def admin_required(f):
@@ -220,15 +267,7 @@ class Performance(db.Model):
 @app.context_processor
 def inject_bar_settings():
     """Inject bar settings based on URL parameter - URL takes priority"""
-    # URL parameter has HIGHEST priority
-    url_bar = request.args.get('bar')
-    
-    if url_bar:
-        bar_id = url_bar
-        session['current_bar'] = bar_id
-    else:
-        bar_id = session.get('current_bar', 'djoint')
-    
+    bar_id = get_current_bar()
     current_bar = BARS.get(bar_id, BARS['djoint'])
     return dict(bar=current_bar, bar_id=bar_id, bars=BARS)
 
@@ -275,6 +314,11 @@ def set_bar(bar_id):
         session['current_bar'] = bar_id
         # Get the page to redirect back to
         redirect_to = request.args.get('redirect', url_for('home'))
+        # Ensure the redirect URL has the bar parameter
+        if '?' in redirect_to:
+            redirect_to += f'&bar={bar_id}'
+        else:
+            redirect_to += f'?bar={bar_id}'
         bar_name = BARS.get(bar_id, {}).get('name', bar_id.title())
         flash(f'Switched to {bar_name}', 'info')
         return redirect(redirect_to)
@@ -331,7 +375,7 @@ with app.app_context():
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -358,18 +402,18 @@ def admin_logout():
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('home'))
 
-# ============ CUSTOMER ROUTES ============
+# ============ CUSTOMER ROUTES (UPDATED TO USE get_current_bar) ============
 
 @app.route('/')
 def home():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     rooms = Room.query.filter_by(bar_id=bar_id).limit(3).all()
     seats = Seat.query.filter_by(bar_id=bar_id).limit(6).all()
     return render_template('home.html', rooms=rooms, seats=seats)
 
 @app.route('/book-seat', methods=['GET', 'POST'])
 def book_seat():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         booking = Booking(
             bar_id=bar_id,
@@ -384,14 +428,14 @@ def book_seat():
         db.session.add(booking)
         db.session.commit()
         flash('Seat booked successfully!', 'success')
-        return redirect(url_for('my_bookings'))
+        return redirect(url_for('my_bookings', bar=bar_id))
     
     seats = Seat.query.filter_by(bar_id=bar_id, available=True).all()
     return render_template('book_seat.html', seats=seats)
 
 @app.route('/book-room', methods=['GET', 'POST'])
 def book_room():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         booking = Booking(
             bar_id=bar_id,
@@ -406,28 +450,28 @@ def book_room():
         db.session.add(booking)
         db.session.commit()
         flash('Room booked successfully!', 'success')
-        return redirect(url_for('my_bookings'))
+        return redirect(url_for('my_bookings', bar=bar_id))
     
     rooms = Room.query.filter_by(bar_id=bar_id).all()
     return render_template('book_room.html', rooms=rooms)
 
 @app.route('/my-bookings')
 def my_bookings():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     bookings = Booking.query.filter_by(bar_id=bar_id).order_by(Booking.created_at.desc()).all()
     return render_template('bookings.html', bookings=bookings)
 
 # Food Menu Routes
 @app.route('/menu')
 def menu():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     categories = FoodCategory.query.filter_by(bar_id=bar_id).all()
     popular_items = FoodItem.query.filter_by(bar_id=bar_id, popular=True, available=True).limit(6).all()
     return render_template('menu.html', categories=categories, popular_items=popular_items)
 
 @app.route('/order-food', methods=['GET', 'POST'])
 def order_food():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         order = FoodOrder(
             bar_id=bar_id,
@@ -458,7 +502,7 @@ def order_food():
         
         db.session.commit()
         flash('Order placed successfully!', 'success')
-        return redirect(url_for('order_confirmation', order_id=order.id))
+        return redirect(url_for('order_confirmation', order_id=order.id, bar=bar_id))
     
     categories = FoodCategory.query.filter_by(bar_id=bar_id).all()
     items = FoodItem.query.filter_by(bar_id=bar_id, available=True).all()
@@ -472,13 +516,13 @@ def order_confirmation(order_id):
 # Snooker Routes
 @app.route('/snooker')
 def snooker():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     tables = SnookerTable.query.filter_by(bar_id=bar_id).all()
     return render_template('snooker.html', tables=tables)
 
 @app.route('/book-snooker', methods=['GET', 'POST'])
 def book_snooker():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         start = request.form['start_time']
         hours = int(request.form['hours'])
@@ -500,21 +544,21 @@ def book_snooker():
         db.session.add(booking)
         db.session.commit()
         flash('Snooker table booked successfully!', 'success')
-        return redirect(url_for('my_snooker_bookings'))
+        return redirect(url_for('my_snooker_bookings', bar=bar_id))
     
     tables = SnookerTable.query.filter_by(bar_id=bar_id, available=True).all()
     return render_template('book_snooker.html', tables=tables)
 
 @app.route('/my-snooker-bookings')
 def my_snooker_bookings():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     bookings = SnookerBooking.query.filter_by(bar_id=bar_id).order_by(SnookerBooking.created_at.desc()).all()
     return render_template('my_snooker_bookings.html', bookings=bookings)
 
 # DJ/Artist Routes
 @app.route('/artists')
 def artists():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     featured = Artist.query.filter_by(bar_id=bar_id, status='featured').all()
     upcoming = Artist.query.filter_by(bar_id=bar_id, status='approved').all()
     performances = Performance.query.filter_by(bar_id=bar_id, status='scheduled').order_by(Performance.performance_date).all()
@@ -522,7 +566,7 @@ def artists():
 
 @app.route('/artist-signup', methods=['GET', 'POST'])
 def artist_signup():
-    bar_id = session.get('current_bar', 'djoint')
+    bar_id = get_current_bar()
     if request.method == 'POST':
         artist = Artist(
             bar_id=bar_id,
@@ -546,7 +590,7 @@ def artist_signup():
         db.session.add(artist)
         db.session.commit()
         flash('Application submitted! We\'ll contact you soon.', 'success')
-        return redirect(url_for('artists'))
+        return redirect(url_for('artists', bar=bar_id))
     
     return render_template('artist_signup.html', artist=None)
 
